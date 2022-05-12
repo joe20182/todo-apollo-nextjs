@@ -182,7 +182,8 @@ const Index = () => {
   );
 };
 
-export async function getStaticProps() {
+// getStaticProps 改成 getServerSideProps
+export async function getServerSideProps() {
   await connectDb();
 
   const apolloClient = initializeApollo();
