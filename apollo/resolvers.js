@@ -1,23 +1,15 @@
+const Todo = require("./models");
+
 export const resolvers = {
   Query: {
-    todos() {
-      return [
-        {
-          id: 1,
-          text: "111",
-          status: true,
-        },
-        {
-          id: 2,
-          text: "222",
-          status: false,
-        },
-        {
-          id: 3,
-          text: "333",
-          status: true,
-        },
-      ];
+    todos: async () => {
+      try {
+        const data = await Todo.find({});
+        return data;
+      } catch (err) {
+        console.log(err);
+        return [];
+      }
     },
   },
 };

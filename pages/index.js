@@ -20,6 +20,7 @@ import Divider from "@mui/material/Divider";
 // local
 import { initializeApollo } from "../apollo/client";
 import { GET_TODOS } from "../graphql/query";
+import connectDb from "../apollo/db";
 
 const Index = () => {
   const {
@@ -92,6 +93,8 @@ const Index = () => {
 };
 
 export async function getStaticProps() {
+  await connectDb();
+
   const apolloClient = initializeApollo();
 
   await apolloClient.query({
