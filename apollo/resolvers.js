@@ -22,5 +22,31 @@ export const resolvers = {
         console.log(err);
       }
     },
+    updateTodo: async (_, { id, input }) => {
+      try {
+        const doc = await Todo.findById(id);
+        if (!doc) {
+          throw new Error("document not found");
+        }
+        newDoc = await Todo.findOneAndUpdate({ _id: id }, input, {
+          new: true,
+        });
+        return newDoc;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    deleteTodo: async (_, { id }) => {
+      try {
+        const doc = await Todo.findById(id);
+        if (!doc) {
+          throw new Error("document not found");
+        }
+        await Todo.findOneAndDelete({ _id: id });
+        return "delete success";
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };

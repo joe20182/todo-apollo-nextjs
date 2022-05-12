@@ -22,7 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 // local
 import { initializeApollo } from "../apollo/client";
 import { GET_TODOS } from "../graphql/query";
-import { CREATE_TODO } from "../graphql/mutation";
+import { CREATE_TODO, UPDATE_TODO, DELETE_TODO } from "../graphql/mutation";
 import connectDb from "../apollo/db";
 
 const Index = () => {
@@ -32,25 +32,51 @@ const Index = () => {
   const {
     data: { todos },
     loading,
-    error,
   } = useQuery(GET_TODOS);
 
   const [createTodo] = useMutation(CREATE_TODO, {
     onCompleted: () => setText(""),
   });
+  const [updateTodo] = useMutation(UPDATE_TODO);
+  const [deleteTodo] = useMutation(DELETE_TODO);
 
   /**
    * 勾選checkbox
    */
-  const handleCheck = () => {
+  const handleCheck = async ({ id, status }) => {
     console.log("handleCheck");
+    setIsLoading(true);
+    try {
+      await updateTodo({
+        variables: {
+          id,
+          input: { status: !status },
+        },
+        refetchQueries: [{ query: GET_TODOS }],
+      });
+    } catch (error) {
+      alert("update failed", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /**
    * 刪除資料
    */
-  const handleDelete = () => {
+  const handleDelete = async ({ id }) => {
     console.log("delete!");
+    setIsLoading(true);
+    try {
+      await deleteTodo({
+        variables: { id },
+        refetchQueries: [{ query: GET_TODOS }],
+      });
+    } catch (error) {
+      alert("delete failed", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -70,13 +96,10 @@ const Index = () => {
             status: false,
           },
         },
-        refetchQueries: [
-          {
-            query: GET_TODOS,
-          },
-        ],
+        refetchQueries: [{ query: GET_TODOS }],
       });
     } catch (error) {
+      alert("oh no");
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +137,12 @@ const Index = () => {
             onChange={handleInput}
             value={text}
           />
-          <Button variant="contained" size="large" onClick={handleAdd}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleAdd}
+            disabled={!text}
+          >
             ADD
           </Button>
         </Box>
@@ -128,13 +156,17 @@ const Index = () => {
                   <IconButton
                     edge="end"
                     aria-label="comments"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(item)}
                   >
                     <DeleteForeverIcon sx={{ color: "text.primary" }} />
                   </IconButton>
                 }
               >
-                <ListItemButton role={undefined} dense onClick={handleCheck}>
+                <ListItemButton
+                  role={undefined}
+                  dense
+                  onClick={() => handleCheck(item)}
+                >
                   <ListItemIcon>
                     <Checkbox
                       edge="start"
