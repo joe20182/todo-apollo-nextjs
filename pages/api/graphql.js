@@ -2,7 +2,7 @@ import { ApolloServer } from "apollo-server-micro";
 import { schema } from "../../apollo/schema";
 import connectDb from "../../apollo/db";
 
-connectDb();
+// connectDb();
 
 const apolloServer = new ApolloServer({ schema });
 
