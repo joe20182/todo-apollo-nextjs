@@ -12,4 +12,15 @@ export const resolvers = {
       }
     },
   },
+  Mutation: {
+    createTodo: async (_, { input }) => {
+      try {
+        const Model = new Todo(input);
+        const result = await Model.save();
+        return result;
+      } catch (error) {
+        console.log(err);
+      }
+    },
+  },
 };

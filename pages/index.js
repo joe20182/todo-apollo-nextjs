@@ -1,6 +1,6 @@
-import gql from "graphql-tag";
+import { useState, useEffect } from "react";
 import Head from "next/head";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 // MUI
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
@@ -17,23 +17,77 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 // local
 import { initializeApollo } from "../apollo/client";
 import { GET_TODOS } from "../graphql/query";
+import { CREATE_TODO } from "../graphql/mutation";
 import connectDb from "../apollo/db";
 
 const Index = () => {
+  const [text, setText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     data: { todos },
+    loading,
+    error,
   } = useQuery(GET_TODOS);
-  console.log(todos);
 
+  const [createTodo] = useMutation(CREATE_TODO, {
+    onCompleted: () => setText(""),
+  });
+
+  /**
+   * 勾選checkbox
+   */
   const handleCheck = () => {
     console.log("handleCheck");
   };
 
+  /**
+   * 刪除資料
+   */
   const handleDelete = () => {
     console.log("delete!");
+  };
+
+  useEffect(() => {
+    console.log(87, loading);
+  }, [loading]);
+
+  /**
+   * 新增按鈕
+   */
+  const handleAdd = async () => {
+    setIsLoading(true);
+    try {
+      await createTodo({
+        variables: {
+          input: {
+            text,
+            status: false,
+          },
+        },
+        refetchQueries: [
+          {
+            query: GET_TODOS,
+          },
+        ],
+      });
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 文字寫入state
+   * @param {Event} e
+   */
+  const handleInput = (e) => {
+    setText(e.target.value);
   };
 
   return (
@@ -46,13 +100,21 @@ const Index = () => {
         />
       </Head>
       <CssBaseline />
+      <Backdrop open={isLoading} sx={{ zIndex: 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Container maxWidth="md">
         <Typography variant="h3" gutterBottom component="div">
           TODO LIST
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <TextField placeholder="ADD TODOS" sx={{ marginRight: 1 }} />
-          <Button variant="contained" size="large">
+          <TextField
+            placeholder="ADD TODOS"
+            sx={{ marginRight: 1 }}
+            onChange={handleInput}
+            value={text}
+          />
+          <Button variant="contained" size="large" onClick={handleAdd}>
             ADD
           </Button>
         </Box>

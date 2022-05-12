@@ -13,7 +13,7 @@ export const typeDefs = gql`
 
   input TodoInput {
     text: String
-    status: Int!
+    status: Boolean!
   }
 
   type Mutation {
