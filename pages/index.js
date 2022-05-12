@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import { useQuery, useMutation } from "@apollo/client";
 // MUI
@@ -52,7 +52,7 @@ const Index = () => {
           id,
           input: { status: !status },
         },
-        refetchQueries: [{ query: GET_TODOS }],
+        // refetchQueries: [{ query: GET_TODOS }],
       });
     } catch (error) {
       alert("update failed", error);
@@ -78,10 +78,6 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    console.log(87, loading);
-  }, [loading]);
 
   /**
    * 新增按鈕

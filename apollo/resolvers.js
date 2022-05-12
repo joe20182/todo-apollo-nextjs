@@ -28,7 +28,7 @@ export const resolvers = {
         if (!doc) {
           throw new Error("document not found");
         }
-        newDoc = await Todo.findOneAndUpdate({ _id: id }, input, {
+        const newDoc = await Todo.findOneAndUpdate({ _id: id }, input, {
           new: true,
         });
         return newDoc;
