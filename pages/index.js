@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import Link from "next/link";
 import Head from "next/head";
 import { useQuery } from "@apollo/client";
 // MUI
@@ -18,23 +17,15 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-
+// local
 import { initializeApollo } from "../apollo/client";
-
-const ViewerQuery = gql`
-  query ViewerQuery {
-    viewer {
-      id
-      name
-      status
-    }
-  }
-`;
+import { GET_TODOS } from "../graphql/query";
 
 const Index = () => {
   const {
-    data: { viewer },
-  } = useQuery(ViewerQuery);
+    data: { todos },
+  } = useQuery(GET_TODOS);
+  console.log(todos);
 
   const handleCheck = () => {
     console.log("handleCheck");
@@ -66,10 +57,10 @@ const Index = () => {
         </Box>
         <Divider sx={{ margin: 3 }} />
         <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-          {[0, 1, 2, 3].map((v) => {
+          {todos.map((item) => {
             return (
               <ListItem
-                key={v}
+                key={item.id}
                 secondaryAction={
                   <IconButton
                     edge="end"
@@ -84,24 +75,17 @@ const Index = () => {
                   <ListItemIcon>
                     <Checkbox
                       edge="start"
-                      checked={true}
+                      checked={item.status}
                       tabIndex={-1}
                       disableRipple
                     />
                   </ListItemIcon>
-                  <ListItemText id={v} primary={"12321"} />
+                  <ListItemText primary={item.text} />
                 </ListItemButton>
               </ListItem>
             );
           })}
         </List>
-        {/* <div>
-          You're signed in as {viewer.name} and you're {viewer.status} goto{" "}
-          <Link href="/about">
-            <a>static</a>
-          </Link>{" "}
-          page.
-        </div> */}
       </Container>
     </>
   );
@@ -111,7 +95,7 @@ export async function getStaticProps() {
   const apolloClient = initializeApollo();
 
   await apolloClient.query({
-    query: ViewerQuery,
+    query: GET_TODOS,
   });
 
   return {
