@@ -5,25 +5,18 @@ import { useQuery, useMutation } from "@apollo/client";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 // local
 import { initializeApollo } from "../apollo/client";
 import { GET_TODOS } from "../graphql/query";
 import { CREATE_TODO, UPDATE_TODO, DELETE_TODO } from "../graphql/mutation";
 import connectDb from "../apollo/db";
+// local components
+import TodoList from "../components/TodoList";
+import Loading from "../components/Loading";
 
 const Index = () => {
   const [text, setText] = useState("");
@@ -118,9 +111,7 @@ const Index = () => {
         />
       </Head>
       <CssBaseline />
-      <Backdrop open={isLoading} sx={{ zIndex: 1 }}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loading isLoading={isLoading} />
       <Container maxWidth="md">
         <Typography variant="h3" gutterBottom component="div">
           TODO LIST
@@ -142,40 +133,11 @@ const Index = () => {
           </Button>
         </Box>
         <Divider sx={{ margin: 3 }} />
-        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-          {todos.map((item) => {
-            return (
-              <ListItem
-                key={item.id}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="comments"
-                    onClick={() => handleDelete(item)}
-                  >
-                    <DeleteForeverIcon sx={{ color: "text.primary" }} />
-                  </IconButton>
-                }
-              >
-                <ListItemButton
-                  role={undefined}
-                  dense
-                  onClick={() => handleCheck(item)}
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={item.status}
-                      tabIndex={-1}
-                      disableRipple
-                    />
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
+        <TodoList
+          todos={todos}
+          handleCheck={handleCheck}
+          handleDelete={handleDelete}
+        />
       </Container>
     </>
   );
