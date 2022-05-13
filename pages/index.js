@@ -31,7 +31,7 @@ const Index = () => {
 
   const {
     data: { todos },
-    loading,
+    refetch,
   } = useQuery(GET_TODOS);
 
   const [createTodo] = useMutation(CREATE_TODO, {
@@ -52,7 +52,6 @@ const Index = () => {
           id,
           input: { status: !status },
         },
-        // refetchQueries: [{ query: GET_TODOS }],
       });
     } catch (error) {
       alert("update failed", error);
@@ -70,8 +69,8 @@ const Index = () => {
     try {
       await deleteTodo({
         variables: { id },
-        refetchQueries: [{ query: GET_TODOS }],
       });
+      refetch();
     } catch (error) {
       alert("delete failed", error);
     } finally {
@@ -92,8 +91,8 @@ const Index = () => {
             status: false,
           },
         },
-        refetchQueries: [{ query: GET_TODOS }],
       });
+      refetch();
     } catch (error) {
       alert("oh no");
     } finally {
